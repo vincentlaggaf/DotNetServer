@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:tns="http://facade.receptionfacade.appjee.com/" targetNamespace="http://facade.receptionfacade.appjee.com/" version="1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="receiveDecipherOrder" type="tns:receiveDecipherOrder" />
+  <xs:element name="receiveDecipherOrderResponse" type="tns:receiveDecipherOrderResponse" />
+  <xs:element name="soapMessage" type="tns:soapMessage" />
+  <xs:complexType name="receiveDecipherOrder">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="soapMessage" type="tns:soapMessage" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="soapMessage">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="appVersion" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="unbounded" name="data" nillable="true" type="xs:anyType" />
+      <xs:element minOccurs="0" name="info" type="xs:string" />
+      <xs:element minOccurs="0" name="operationName" type="xs:string" />
+      <xs:element minOccurs="0" name="operationVersion" type="xs:string" />
+      <xs:element minOccurs="0" name="statutOp" type="tns:statutOp" />
+      <xs:element minOccurs="0" name="tokenApp" type="xs:string" />
+      <xs:element minOccurs="0" name="tokenUser" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="receiveDecipherOrderResponse">
+    <xs:sequence>
+      <xs:element minOccurs="0" name="receivedOrder" type="tns:soapMessage" />
+    </xs:sequence>
+  </xs:complexType>
+  <xs:simpleType name="statutOp">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="Waiting" />
+      <xs:enumeration value="Working" />
+      <xs:enumeration value="Finished" />
+      <xs:enumeration value="Sent" />
+    </xs:restriction>
+  </xs:simpleType>
+</xs:schema>

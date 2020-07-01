@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ReferenceGroup xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" ID="40d4051c-7e55-44e4-b786-f95bdf8562fc" xmlns="urn:schemas-microsoft-com:xml-wcfservicemap">
+  <ClientOptions>
+    <GenerateAsynchronousMethods>false</GenerateAsynchronousMethods>
+    <GenerateTaskBasedAsynchronousMethod>true</GenerateTaskBasedAsynchronousMethod>
+    <EnableDataBinding>true</EnableDataBinding>
+    <ExcludedTypes />
+    <ImportXmlTypes>false</ImportXmlTypes>
+    <GenerateInternalTypes>false</GenerateInternalTypes>
+    <GenerateMessageContracts>false</GenerateMessageContracts>
+    <NamespaceMappings />
+    <CollectionMappings />
+    <GenerateSerializableTypes>true</GenerateSerializableTypes>
+    <Serializer>Auto</Serializer>
+    <UseSerializerForFaults>true</UseSerializerForFaults>
+    <ReferenceAllAssemblies>true</ReferenceAllAssemblies>
+    <ReferencedAssemblies />
+    <ReferencedDataContractTypes />
+    <ServiceContractMappings />
+  </ClientOptions>
+  <MetadataSources>
+    <MetadataSource Address="net.tcp://localhost:8018/MessageService/Facade" Protocol="mex" SourceId="1" />
+  </MetadataSources>
+  <Metadata>
+    <MetadataFile FileName="service.wsdl" MetadataType="Wsdl" ID="e057ed32-ba30-4066-8f64-fa25e287d90f" SourceId="1" SourceUrl="net.tcp://localhost:8018/MessageService/Facade" />
+    <MetadataFile FileName="service.xsd" MetadataType="Schema" ID="dd7216aa-0c7c-4e2b-9ddf-beeb536c3eb9" SourceId="1" SourceUrl="net.tcp://localhost:8018/MessageService/Facade" />
+    <MetadataFile FileName="service1.xsd" MetadataType="Schema" ID="16ed9d70-7b22-4a84-8648-6b08b18839ce" SourceId="1" SourceUrl="net.tcp://localhost:8018/MessageService/Facade" />
+    <MetadataFile FileName="Contract.xsd" MetadataType="Schema" ID="d75f76ff-4a5b-42f3-ae0c-ee1d03c13265" SourceId="1" SourceUrl="net.tcp://localhost:8018/MessageService/Facade" />
+    <MetadataFile FileName="Arrays.xsd" MetadataType="Schema" ID="dd00074b-c59c-4bfc-bd55-7d0ad7f1818a" SourceId="1" SourceUrl="net.tcp://localhost:8018/MessageService/Facade" />
+  </Metadata>
+  <Extensions>
+    <ExtensionFile FileName="configuration91.svcinfo" Name="configuration91.svcinfo" />
+    <ExtensionFile FileName="configuration.svcinfo" Name="configuration.svcinfo" />
+  </Extensions>
+</ReferenceGroup>
