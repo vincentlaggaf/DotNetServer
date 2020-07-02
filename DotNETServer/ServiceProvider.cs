@@ -9,6 +9,7 @@ using System.Threading;
 using Job;
 using System.ServiceModel.Channels;
 using System.Xml;
+using System.ServiceModel.Configuration;
 
 namespace DotNETServer
 {
@@ -18,19 +19,21 @@ namespace DotNETServer
         private ServiceHost host;
         public void ServiceStart()
         {
-            baseAddress = new Uri("net.tcp://localhost:8018/Job/MessageService");
-            NetTcpBinding binding = new NetTcpBinding();
-            binding.Security.Mode = SecurityMode.Message;
-            binding.MaxReceivedMessageSize = 10485760;
-            XmlDictionaryReaderQuotas myReaderQuotas = new XmlDictionaryReaderQuotas();
-            myReaderQuotas.MaxStringContentLength = 10485760;
-            binding.GetType().GetProperty("ReaderQuotas").SetValue(binding, myReaderQuotas, null);
-            binding.ReceiveTimeout = TimeSpan.FromSeconds(20);
+            //baseAddress = new Uri("net.tcp://localhost:8018/Job/MessageService");
+            //NetTcpBinding binding = new NetTcpBinding();
+            //binding.Security.Mode = SecurityMode.Message;
+
+            //baseAddress = new Uri("http://localhost:9018/Job/MessageService");
+            //WSHttpBinding binding = new WSHttpBinding();
+           // binding.MaxReceivedMessageSize = 10485760;
+           // XmlDictionaryReaderQuotas myReaderQuotas = new XmlDictionaryReaderQuotas();
+           // myReaderQuotas.MaxStringContentLength = 10485760;
+           // binding.GetType().GetProperty("ReaderQuotas").SetValue(binding, myReaderQuotas, null);
+           // binding.ReceiveTimeout = TimeSpan.FromSeconds(20);
 
             host = new ServiceHost(typeof(Job.MessageService));
             try
             {
-                host.AddServiceEndpoint(typeof(IMessageService), binding, baseAddress);
                 host.Open();
 
                 Console.WriteLine("Serveur started");

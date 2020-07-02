@@ -39,14 +39,17 @@ namespace Job
                         {
                             msg.info = $"Error : only one decipher operation at a time is allowed and the user with the tokenUser : {msg.tokenUser} as already started a decipher operation.";
                         }
-                            break;
-                        case "returnResult":
+                        break;
+                    case "returnResult":
                             //Console.WriteLine($"{msg.info}");
                             //msg.info = "Retour de la demande de résultat ";
                             msg = CheckResultReturner(msg);
                             break;
-                        case "updateResult":
-                            msg = UpdateResultReturner(msg);
+                    case "updateResult":
+                            msg = UpdateResultReturner(msg,false);
+                            break;
+                    case "updateSecretResult":
+                        msg = UpdateResultReturner(msg,true);
                             break;
                             //Peut être un case à rajouter pour gérer la réception des messages depuis la plateforme J2EE
                         default:
@@ -101,6 +104,7 @@ namespace Job
             return msg;
         }
 
+
         private string StartAuthenticate(Message msg)
         {
             //TODO : gérer les null pointeurs sur l'objet Data du message
@@ -153,14 +157,14 @@ namespace Job
             return resultReturner.ReturnResult(msg);
         }
 
-        private Message UpdateResultReturner(Message msg)
+        private Message UpdateResultReturner(Message msg, bool isSecretInfoHere)
         {
             if (resultReturner == null)
             {
                 resultReturner = new ResultReturner();
             }
 
-            return resultReturner.UpdateResultReturnerData(msg);
+            return resultReturner.UpdateResultReturner(msg,isSecretInfoHere);
         }
 
         private void AppendToLog(string textToAppend)

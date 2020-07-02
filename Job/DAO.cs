@@ -123,7 +123,7 @@ namespace Job
                 {
                     while (sqlReader.Read())
                     {
-                        mail = String.Format("{0}", sqlReader["Request_Status"]).ToString();
+                        mail = String.Format("{0}", sqlReader["Mail"]).ToString();
                     }
                 }
 

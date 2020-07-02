@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ReferenceGroup xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" ID="40d4051c-7e55-44e4-b786-f95bdf8562fc" xmlns="urn:schemas-microsoft-com:xml-wcfservicemap">
+<ReferenceGroup xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" ID="63e0d5df-d3d5-4de1-95e2-97524e26c45f" xmlns="urn:schemas-microsoft-com:xml-wcfservicemap">
   <ClientOptions>
     <GenerateAsynchronousMethods>false</GenerateAsynchronousMethods>
     <GenerateTaskBasedAsynchronousMethod>true</GenerateTaskBasedAsynchronousMethod>
@@ -19,14 +19,14 @@
     <ServiceContractMappings />
   </ClientOptions>
   <MetadataSources>
-    <MetadataSource Address="net.tcp://localhost:8018/MessageService/Facade" Protocol="mex" SourceId="1" />
+    <MetadataSource Address="http://localhost:9018/MessageService/Facade?wsdl" Protocol="http" SourceId="1" />
   </MetadataSources>
   <Metadata>
-    <MetadataFile FileName="service.wsdl" MetadataType="Wsdl" ID="e057ed32-ba30-4066-8f64-fa25e287d90f" SourceId="1" SourceUrl="net.tcp://localhost:8018/MessageService/Facade" />
-    <MetadataFile FileName="service.xsd" MetadataType="Schema" ID="dd7216aa-0c7c-4e2b-9ddf-beeb536c3eb9" SourceId="1" SourceUrl="net.tcp://localhost:8018/MessageService/Facade" />
-    <MetadataFile FileName="service1.xsd" MetadataType="Schema" ID="16ed9d70-7b22-4a84-8648-6b08b18839ce" SourceId="1" SourceUrl="net.tcp://localhost:8018/MessageService/Facade" />
-    <MetadataFile FileName="Contract.xsd" MetadataType="Schema" ID="d75f76ff-4a5b-42f3-ae0c-ee1d03c13265" SourceId="1" SourceUrl="net.tcp://localhost:8018/MessageService/Facade" />
-    <MetadataFile FileName="Arrays.xsd" MetadataType="Schema" ID="dd00074b-c59c-4bfc-bd55-7d0ad7f1818a" SourceId="1" SourceUrl="net.tcp://localhost:8018/MessageService/Facade" />
+    <MetadataFile FileName="Facade.xsd" MetadataType="Schema" ID="2b3eaf11-6b8b-4a3a-90c8-7297554703a9" SourceId="1" SourceUrl="http://localhost:9018/MessageService/Facade?xsd=xsd2" />
+    <MetadataFile FileName="MessageService.wsdl" MetadataType="Wsdl" ID="50d0738b-9836-482d-94d5-5cfbf6823588" SourceId="1" SourceUrl="http://localhost:9018/MessageService/Facade?wsdl" />
+    <MetadataFile FileName="Facade1.xsd" MetadataType="Schema" ID="5ffbb54c-b47d-4038-a6ba-d2075e1dd340" SourceId="1" SourceUrl="http://localhost:9018/MessageService/Facade?xsd=xsd0" />
+    <MetadataFile FileName="Facade2.xsd" MetadataType="Schema" ID="69e31da8-6b08-4e02-9461-4bb25b3f101e" SourceId="1" SourceUrl="http://localhost:9018/MessageService/Facade?xsd=xsd3" />
+    <MetadataFile FileName="Facade3.xsd" MetadataType="Schema" ID="eb3ca00a-4bca-49f0-bf38-c12b764061f6" SourceId="1" SourceUrl="http://localhost:9018/MessageService/Facade?xsd=xsd1" />
   </Metadata>
   <Extensions>
     <ExtensionFile FileName="configuration91.svcinfo" Name="configuration91.svcinfo" />

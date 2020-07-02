@@ -1,10 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
 using Contract;
+using PdfSharp.Drawing;
+using PdfSharp.Drawing.Layout;
+using PdfSharp.Pdf;
 
 namespace Job
 {
@@ -31,7 +35,10 @@ namespace Job
                 case StatusOp.Finished:
                     updatedInfo = $"Une opération de déchiffrement a été effectuée pour l'utilisateur qui a pour tokenUser : {msg.tokenUser} et est en attente de finalisation. Envoi des fichiers en cours";
                     msg = UpdateMessageInfos(msg, statusOp, updatedInfo);
+                    DAO dao = new DAO();
+                    dao.UpdateRequestStatus(StatusOp.Sent, msg.tokenUser);
                     msg.data = ResultContainer.GetAwaitingResultForUser(msg.tokenUser);
+
                     break;
 
             }    
@@ -47,31 +54,44 @@ namespace Job
             return statusOp;
         }
 
-        public Message UpdateResultReturnerData(Message msg)
+        public Message UpdateResultReturner(Message msg,bool isInfoSecretHere)
         {
-            ResultContainer.AddDecipherResultToWaitingList(msg.tokenUser, msg);
             StatusOp statusOp = StatusOp.Finished;
             string info = "Réception des fichiers déchiffrés terminée";
+            ResultContainer.AddDecipherResultToWaitingList(msg.tokenUser, msg);
             Console.Write($"Les fichiers décryptés ont été reçu sur le serveur : {msg.data[0].ToString()}");
             DAO dao = new DAO();
             dao.UpdateRequestStatus(statusOp, msg.tokenUser);
+            ReceivedInfoFromJEE(msg,isInfoSecretHere);
             msg = UpdateMessageInfos(msg, statusOp, info);
 
             return msg;
         }
+
         //Réfléchir à comment faire la méthode qui sera appelée par Maxime depuis JEE
-        public Message receivedInfoFromJEE(Message msg)
+        public Message ReceivedInfoFromJEE(Message msg, bool isInfoSecretHere)
         {
             DAO dao = new DAO();
             string mail = dao.GetMailFromTokenUser(msg.tokenUser);
-            string keyUsed = msg.data[0].ToString();
-            string secretInfo = msg.data[1].ToString();
-            string fileName = msg.data[2].ToString();
+            string fileName = msg.data[0].ToString();
+            string confidenceRate = msg.data[3].ToString();
+            string keyUsed = "";
+            string secretInfo = "";
+            if (isInfoSecretHere)
+            {
+                keyUsed = msg.data[1].ToString();
+                secretInfo = msg.data[2].ToString();
+            }
+            else
+                keyUsed = msg.data[2].ToString();
+
             string info = "Le mail de notification a été envoyé à l'utilisateur";
-            SendMail(keyUsed, secretInfo, fileName, mail);
+            SendMail(fileName, keyUsed, secretInfo, mail, isInfoSecretHere,confidenceRate);
             msg = UpdateMessageInfos(msg,StatusOp.Sent,info);
+
             return msg; 
         }
+
         private Message UpdateMessageInfos(Message msg,StatusOp statusOp, string info)
         {
             msg.statusOp = statusOp;
@@ -79,16 +99,27 @@ namespace Job
 
             return msg;
         }
-        //PENSER A PASSER CETTE METHODE EN PRIVE UNE FOIS QUON RECEVRA LES MESSAGES DE J2EE
-        public void SendMail(string keyUsed, string secretInfo,string fileName,string mail)
+        //PENSER A PASSER CETTE METHODE EN PRIVE UNE FOIS QUON RECEVRA LES MESSAGES DE J2EE // PENSER A RAJOUTER LE TAUX DE CONFIANCE EN PARAMETRE et PEUT ETRE LE CONTENT DU FICHIER???
+        public void SendMail(string fileName, string keyUsed, string secretInfo,string mail,bool isInfoSecretHere,string confidenceRate)
         {
             MailMessage message = new MailMessage();
             SmtpClient smtpClient = new SmtpClient();
             message.From = new MailAddress("decipherServerEMX@gmail.com");
             message.To.Add(new MailAddress(mail));
-            message.Subject = "Results of the deciphering of your files ";
+            message.Subject = $"Results of the deciphering of your files ";
+            if (isInfoSecretHere)
+                message.Subject +=": Secret information found !!";
             message.IsBodyHtml = true;
-            message.Body = BuildMailBody(keyUsed,secretInfo,fileName);
+            message.Body = BuildMailBody(keyUsed,secretInfo,fileName, isInfoSecretHere);
+
+            MemoryStream memoryStream = CreatePDFReport(fileName, confidenceRate, keyUsed, secretInfo, isInfoSecretHere);
+            memoryStream.Position = 0;
+            System.Net.Mime.ContentType contentType = new System.Net.Mime.ContentType(System.Net.Mime.MediaTypeNames.Application.Pdf);
+            Attachment attach = new Attachment(memoryStream, contentType);
+            attach.ContentDisposition.FileName = $"Report.PDF";
+            message.Attachments.Add(attach);
+
+
             smtpClient.Host = "smtp.gmail.com"; //for gmail host  
             smtpClient.UseDefaultCredentials = false;
             smtpClient.Port = 587;
@@ -96,10 +127,11 @@ namespace Job
             smtpClient.Credentials = new System.Net.NetworkCredential("decipherServerEMX@gmail.com", "CesiXor64");
             smtpClient.DeliveryMethod = SmtpDeliveryMethod.Network;
             smtpClient.Send(message);
+            memoryStream.Close();
 
         }
 
-        private string BuildMailBody(string keyUsed, string secretInfo, string fileName)
+        private string BuildMailBody(string keyUsed, string secretInfo, string fileName,bool isInfoSecretHere)
         {
             string body = "<font>Here is the information obtained after decrypting the files </font><br><br>";
             string htmlTableStart = "<table style=\"border-collapse:collapse; text-align:center;\" >";
@@ -115,7 +147,8 @@ namespace Job
             body += htmlHeaderRowStart;
             body += htmlTdStart + "File name" + htmlTdEnd;
             body += htmlTdStart + "Key used" + htmlTdEnd;
-            body += htmlTdStart + "Secret info" + htmlTdEnd;
+            if(isInfoSecretHere)
+                body += htmlTdStart + "Secret info" + htmlTdEnd;
             body += htmlHeaderRowEnd;
             body = body + htmlTrStart;
             body = body + htmlTdStart + fileName + htmlTdEnd; 
@@ -125,6 +158,37 @@ namespace Job
             body = body + htmlTableEnd;
 
             return body;
+        }
+
+        private MemoryStream CreatePDFReport(string filename, string confidenceRate,string keyUsed,string secretInfo, bool isInfoSecretHere)
+        {
+            PdfDocument document = new PdfDocument();
+            document.Info.Title = $"Report of the confidence rate of the document \"{filename} \" ";
+
+            PdfPage page = document.AddPage();
+
+            XGraphics gfx = XGraphics.FromPdfPage(page);
+
+            XFont font = new XFont("Calibri", 11, XFontStyle.Regular);
+            XTextFormatter tf = new XTextFormatter(gfx);
+
+            XRect rect = new XRect(40, 100, page.Width-100, 220);
+            gfx.DrawRectangle(XBrushes.SeaShell, rect);
+            tf.DrawString($"Confidence rate : {confidenceRate} Clé utilisée : {keyUsed} ", font, XBrushes.Black, rect, XStringFormats.TopLeft);
+            if(isInfoSecretHere)
+            {
+                string secretInfoToWrite = $"The secret information was : {secretInfo}";
+                rect = new XRect(20, 400, page.Width - 50, page.Height);
+                gfx.DrawRectangle(XBrushes.SeaShell, rect);
+                tf.Alignment = XParagraphAlignment.Justify;
+                tf.DrawString(secretInfoToWrite, font, XBrushes.Black, rect, XStringFormats.TopLeft);
+            }
+
+
+            MemoryStream memoryStream = new MemoryStream();
+            document.Save(memoryStream);
+
+            return memoryStream;
         }
     }
 }
